@@ -1,25 +1,26 @@
-import { createStyles, Progress, Box, Text, Group, Paper, SimpleGrid } from '@mantine/core';
-import { IconArrowUpRight, IconDeviceAnalytics } from '@tabler/icons';
+import { createStyles, Group, Paper, SimpleGrid, Text } from '@mantine/core';
+import {
+  IconUserPlus,
+  IconDiscount2,
+  IconReceipt2,
+  IconCoin,
+  IconArrowUpRight,
+  IconArrowDownRight,
+} from '@tabler/icons';
 
 const useStyles = createStyles((theme) => ({
-  progressLabel: {
-    fontFamily: `Greycliff CF, ${theme.fontFamily}`,
+  root: {
+    padding: theme.spacing.xl * 1.5,
+  },
+
+  value: {
+    fontSize: 24,
+    fontWeight: 700,
     lineHeight: 1,
-    fontSize: theme.fontSizes.sm,
-  },
-
-  stat: {
-    borderBottom: '3px solid',
-    paddingBottom: 5,
-  },
-
-  statCount: {
-    fontFamily: `Greycliff CF, ${theme.fontFamily}`,
-    lineHeight: 1.3,
   },
 
   diff: {
-    fontFamily: `Greycliff CF, ${theme.fontFamily}`,
+    lineHeight: 1,
     display: 'flex',
     alignItems: 'center',
   },
@@ -27,71 +28,69 @@ const useStyles = createStyles((theme) => ({
   icon: {
     color: theme.colorScheme === 'dark' ? theme.colors.dark[3] : theme.colors.gray[4],
   },
+
+  title: {
+    fontWeight: 700,
+    textTransform: 'uppercase',
+  },
 }));
 
-interface StatsSegmentsProps {
-  total: string;
-  diff: number;
-  data: {
-    label: string;
-    count: string;
-    part: number;
-    color: string;
-  }[];
+const icons = {
+  user: IconUserPlus,
+  discount: IconDiscount2,
+  receipt: IconReceipt2,
+  coin: IconCoin,
+};
+
+interface StatsGridProps {
+  data: { title: string; icon: keyof typeof icons; value: string; diff: number }[];
 }
 
-export function WealthSummary({ total, diff, data }: StatsSegmentsProps) {
+export function WealthSummary({ data }: StatsGridProps) {
   const { classes } = useStyles();
+  const stats = data.map((stat) => {
+    const Icon = icons[stat.icon];
+    const DiffIcon = stat.diff > 0 ? IconArrowUpRight : IconArrowDownRight;
 
-  const segments = data.map((segment) => ({
-    value: segment.part,
-    color: segment.color,
-    label: segment.part > 10 ? `${segment.part}%` : undefined,
-  }));
-
-  const descriptions = data.map((stat) => (
-    <Box key={stat.label} sx={{ borderBottomColor: stat.color }} className={classes.stat}>
-      <Text transform="uppercase" size="xs" color="dimmed" weight={700}>
-        {stat.label}
-      </Text>
-
-      <Group position="apart" align="flex-end" spacing={0}>
-        <Text weight={700}>{stat.count}</Text>
-        <Text color={stat.color} weight={700} size="sm" className={classes.statCount}>
-          {stat.part}%
-        </Text>
-      </Group>
-    </Box>
-  ));
-
-  return (
-    <Paper withBorder p="md" radius="md">
-      <Group position="apart">
-        <Group align="flex-end" spacing="xs">
-          <Text size="xl" weight={700}>
-            {total}
+    return (
+      <Paper withBorder p="md" radius="md" key={stat.title}>
+        <Group position="apart">
+          <Text size="xs" color="dimmed" className={classes.title}>
+            {stat.title}
           </Text>
-          <Text color="teal" className={classes.diff} size="sm" weight={700}>
-            <span>{diff}%</span>
-            <IconArrowUpRight size={16} style={{ marginBottom: 4 }} stroke={1.5} />
+          <Icon className={classes.icon} size={22} stroke={1.5} />
+        </Group>
+
+        <Group align="flex-end" spacing="xs" mt={25}>
+          <Text className={classes.value}>{stat.value}</Text>
+          <Text
+            color={stat.diff > 0 ? 'teal' : 'red'}
+            size="sm"
+            weight={500}
+            className={classes.diff}
+          >
+            <span>{stat.diff}%</span>
+            <DiffIcon size={16} stroke={1.5} />
           </Text>
         </Group>
-        <IconDeviceAnalytics size={20} className={classes.icon} stroke={1.5} />
-      </Group>
 
-      <Text color="dimmed" size="sm">
-        Page views compared to previous month
-      </Text>
-
-      <Progress
-        sections={segments}
-        size={34}
-        classNames={{ label: classes.progressLabel }}
-        mt={40}
-      />
-      <SimpleGrid cols={3} breakpoints={[{ maxWidth: 'xs', cols: 1 }]} mt="xl">
-        {descriptions}
+        <Text size="xs" color="dimmed" mt={7}>
+          Compared to previous month
+        </Text>
+      </Paper>
+    );
+  });
+  return (
+    <div className={classes.root}>
+      <SimpleGrid
+        cols={4}
+        breakpoints={[
+          { maxWidth: 'md', cols: 2 },
+          { maxWidth: 'xs', cols: 1 },
+        ]}
+      >
+        {stats}
       </SimpleGrid>
-    </Paper>
+    </div>
   );
 }
