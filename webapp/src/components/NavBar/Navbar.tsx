@@ -8,9 +8,11 @@ import {
   IconAdjustments,
   IconLock,
   IconReportMoney,
+  IconLogout,
 } from "@tabler/icons";
 import { UserButton } from "../UserButton/UserButton";
 import { LinksGroup } from "../NavbarLinksGroup/NavbarLinksGroup";
+import { Link } from 'react-router-dom'
 const mockdata = [
   { label: "Dashboard", icon: IconGauge },
   {
@@ -48,42 +50,85 @@ const mockdata = [
   },
 ];
 
-const useStyles = createStyles((theme) => ({
-  navbar: {
-    backgroundColor:
-      theme.colorScheme === "dark" ? theme.colors.dark[6] : theme.white,
-    paddingBottom: 0,
-  },
+const useStyles = createStyles((theme, _params, getRef) => {
+  const icon = getRef("icon");
+  return {
+    navbar: {
+      backgroundColor:
+        theme.colorScheme === "dark" ? theme.colors.dark[6] : theme.white,
+      paddingBottom: 0,
+    },
 
-  header: {
-    padding: theme.spacing.md,
-    paddingTop: 0,
-    marginLeft: -theme.spacing.md,
-    marginRight: -theme.spacing.md,
-    color: theme.colorScheme === "dark" ? theme.white : theme.black,
-    borderBottom: `1px solid ${
-      theme.colorScheme === "dark" ? theme.colors.dark[4] : theme.colors.gray[3]
-    }`,
-  },
+    header: {
+      padding: theme.spacing.md,
+      paddingTop: 0,
+      marginLeft: -theme.spacing.md,
+      marginRight: -theme.spacing.md,
+      color: theme.colorScheme === "dark" ? theme.white : theme.black,
+      borderBottom: `1px solid ${
+        theme.colorScheme === "dark"
+          ? theme.colors.dark[4]
+          : theme.colors.gray[3]
+      }`,
+    },
 
-  links: {
-    marginLeft: -theme.spacing.md,
-    marginRight: -theme.spacing.md,
-  },
+    links: {
+      marginLeft: -theme.spacing.md,
+      marginRight: -theme.spacing.md,
+    },
 
-  linksInner: {
-    // paddingTop: theme.spacing.xl,
-    // paddingBottom: theme.spacing.xl,
-  },
+    linksInner: {
+      // paddingTop: theme.spacing.xl,
+      // paddingBottom: theme.spacing.xl,
+    },
 
-  footer: {
-    marginLeft: -theme.spacing.md,
-    marginRight: -theme.spacing.md,
-    borderTop: `1px solid ${
-      theme.colorScheme === "dark" ? theme.colors.dark[4] : theme.colors.gray[3]
-    }`,
-  },
-}));
+    footer: {
+      marginLeft: -theme.spacing.md,
+      marginRight: -theme.spacing.md,
+      borderTop: `1px solid ${
+        theme.colorScheme === "dark"
+          ? theme.colors.dark[4]
+          : theme.colors.gray[3]
+      }`,
+    },
+
+    link: {
+      ...theme.fn.focusStyles(),
+      display: "flex",
+      alignItems: "center",
+      textDecoration: "none",
+      fontSize: theme.fontSizes.sm,
+      color: theme.black,
+      padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
+      borderRadius: theme.radius.sm,
+      fontWeight: 500,
+
+      "&:hover": {
+        backgroundColor: theme.colors.gray[1]
+      },
+    },
+
+    linkIcon: {
+      ref: icon,
+      color: theme.black,
+      opacity: 0.75,
+      marginRight: theme.spacing.sm,
+    },
+
+    linkActive: {
+      "&, &:hover": {
+        backgroundColor: theme.fn.lighten(
+          theme.fn.variant({ variant: "filled", color: theme.colors.gray[3] })
+            .background!,
+          0.15
+        ),
+        [`& .${icon}`]: {
+          opacity: 0.9,
+        },
+      },
+    },
+  };
+});
 
 export function NavbarComp() {
   const { classes } = useStyles();
@@ -92,7 +137,12 @@ export function NavbarComp() {
   ));
 
   return (
-    <Navbar p="md" hiddenBreakpoint="sm" hidden={!true} width={{ sm: 200, lg: 300 }}>
+    <Navbar
+      p="md"
+      hiddenBreakpoint="sm"
+      hidden={!true}
+      width={{ sm: 200, lg: 300 }}
+    >
       {/* <Navbar.Section className={classes.header}>
         <Group position="apart">
           <Logo width={120} />{" "}
@@ -113,6 +163,14 @@ export function NavbarComp() {
           name="Ranga Komarthi"
           email="reduxranga@gmail.com"
         />
+
+        <Link
+          to="/"
+          className={classes.link}
+        >
+          <IconLogout className={classes.linkIcon} stroke={1.5} />
+          <span>Logout</span>
+        </Link>
       </Navbar.Section>
     </Navbar>
   );
